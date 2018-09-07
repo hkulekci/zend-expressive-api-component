@@ -1,0 +1,51 @@
+{
+  "name": "hkulekci/expressive-api-component",
+  "description": "API Component",
+  "type": "project",
+  "homepage": "https://github.com/hkulekci/expressive-api-component",
+  "license": "MIT License",
+  "authors": [
+    {
+      "name": "Haydar KÜLEKCİ",
+      "homepage": "https://motivolog.com/"
+    }
+  ],
+  "config": {
+    "platform": {
+      "php": "7.2"
+    }
+  },
+  "require": {
+    "php": "^7.2",
+    "fig/http-message-util": "^1.1",
+    "psr/http-message": "^1.0",
+    "psr/http-server-middleware": "^1.0",
+    "roave/security-advisories": "dev-master",
+    "zendframework/zend-config-aggregator": "^0.2.0",
+    "zendframework/zend-filter": "^2.7",
+    "zendframework/zend-inputfilter": "^2.7",
+    "zendframework/zend-json": "^3.0",
+    "zendframework/zend-expressive": "^3.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "ApiComponent\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ApiComponentTest\\": "test/"
+    }
+  },
+  "scripts": {
+    "check": [
+      "@cs",
+      "@test"
+    ],
+    "cs": "phpcs",
+    "test": "phpunit"
+  }
+}
