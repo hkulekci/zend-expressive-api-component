@@ -116,6 +116,11 @@ class ApiResponse implements ApiResponseInterface
     private $data;
 
     /**
+     * @var bool
+     */
+    private $exact;
+
+    /**
      * @var array
      */
     private $meta = [];
@@ -124,6 +129,7 @@ class ApiResponse implements ApiResponseInterface
     {
         $this->data = $data;
         $this->statusCode = $status;
+        $this->exact = $exact;
         $this->reCreateBody();
     }
 
@@ -149,11 +155,15 @@ class ApiResponse implements ApiResponseInterface
 
     private function reCreateBody(): void
     {
-        $bodyArray = [
-            'result' => true,
-            'status' => $this->getStatusCode(),
-            'data' => $this->data,
-        ];
+        if ($this->exact) {
+            $bodyArray = $this->data;
+        } else {
+            $bodyArray = [
+                'result' => true,
+                'status' => $this->getStatusCode(),
+                'data' => $this->data,
+            ];
+        }
         if ($this->meta) {
             $bodyArray['meta'] = $this->meta;
         }
