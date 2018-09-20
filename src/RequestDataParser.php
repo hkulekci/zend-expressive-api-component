@@ -8,98 +8,40 @@ namespace ApiComponent;
 
 
 use ApiComponent\Helper\ApiProblem;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Json\Json;
 
-class RequestDataParser
+class RequestDataParser implements MiddlewareInterface
 {
-    protected $data = [];
-
-    /**
-     * RequestDataParser constructor.
-     * @param RequestInterface $request
-     * @throws \RuntimeException
-     */
-    public function __construct(RequestInterface $request)
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $body = $request->getParsedBody();
-
-        if (!empty($body)) {
-            $this->data = $body;
-        }
-
-        $contentType = $request->getHeaderLine('content-type');
-        if (empty($contentType)) {
-            $contentType = 'application/json';
-        }
-
-        $this->data = $this->parseRequestData(
-            $request->getBody()->getContents(),
-            $contentType
-        );
-    }
-
-    public function getData(array $default = []): array
-    {
-        return $this->data ?: $default;
-    }
-
-    /**
-     * @param string $input
-     * @param string $contentType
-     *
-     * @return array
-     */
-    protected function parseRequestData($input, $contentType)
-    {
-        $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
-        $parser           = $this->returnParserContentType($contentTypeParts[0]);
-
-        return $parser($input);
-    }
-
-    /**
-     * @param string $contentType
-     *
-     * @return \Closure
-     */
-    protected function returnParserContentType($contentType): callable
-    {
-        if ($contentType === 'application/x-www-form-urlencoded') {
-            return function ($input) {
-                parse_str($input, $data);
-
-                return $data;
-            };
-        }
+        $headerLine = $request->getHeaderLine('content-type');
+        $headerLineParts = preg_split('/\s*[;,]\s*/', $headerLine);
+        $contentType = strtolower($headerLineParts[0]);
+        $data = $request->getParsedBody();
 
         if ($contentType === 'application/json') {
-            return function ($input) {
-                if (!$input) {
-                    return null;
-                }
+            if (empty($data)) {
                 try {
-                    return Json::decode($input, Json::TYPE_ARRAY);
+                    $data = Json::decode($request->getBody()->getContents(), Json::TYPE_ARRAY);
                 } catch (\Exception $e) {
                     return new ApiProblem('Data Parsing Error.', 400);
                 }
-            };
+            }
+
+            return $handler->handle($request->withParsedBody($data));
         }
 
-        if ($contentType === 'multipart/form-data') {
-            return function ($input) {
-                return $input;
-            };
+        if ($contentType === 'application/x-www-form-urlencoded') {
+            $data = [];
+            parse_str($request->getBody()->getContents(), $data);
+
+            return $handler->handle($request->withParsedBody($data));
         }
 
-        if ($contentType === 'text/plain') {
-            return function ($input) {
-                return $input;
-            };
-        }
-
-        return function ($input) {
-            return $input;
-        };
+        return $handler->handle($request);
     }
 }

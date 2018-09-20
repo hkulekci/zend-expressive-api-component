@@ -33,7 +33,7 @@ abstract class AbstractInputFilter implements MiddlewareInterface
     {
         $method  = $request->getAttribute(ApiMiddleware::REST_METHOD_ATTR_NAME);
         $params  = $request->getQueryParams();
-        $rawData = (new RequestDataParser($request))->getData();
+        $rawData = $request->getParsedBody();
 
         if ($method === AbstractResource::METHOD_FETCH_ALL) {
             $inputFilter = $this->buildInputFilter($this->inputFilterSpecsForFetchAllParameters());

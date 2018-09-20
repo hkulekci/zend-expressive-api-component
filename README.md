@@ -24,6 +24,7 @@ Add the middleware to your config file :
                 Zend\Expressive\Helper\UrlHelperMiddleware::class,
                 ....
                 ApiComponent\Helper\ApiMiddleware::class,
+                ApiComponent\RequestDataParser::class,
                 ....
                 Zend\Expressive\Router\Middleware\DispatchMiddleware::class,
                 \Zend\Stratigility\Middleware\NotFoundHandler::class,
