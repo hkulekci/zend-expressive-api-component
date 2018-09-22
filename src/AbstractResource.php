@@ -10,7 +10,6 @@ namespace ApiComponent;
 use ApiComponent\Helper\ApiMiddleware;
 use ApiComponent\Helper\ApiProblem;
 use ApiComponent\Helper\ApiResponseInterface;
-use OAuth2Server\Action\AuthInfoTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -66,7 +65,7 @@ abstract class AbstractResource implements RequestHandlerInterface
             return ResponseBuilder::build($this->delete($attributes['id']));
         }
 
-        return ResponseBuilder::build(new ApiProblem(__('Method not allowed!')), 405);
+        return ResponseBuilder::build($this->methodNotImplementedResponse());
     }
 
     /**
@@ -75,7 +74,7 @@ abstract class AbstractResource implements RequestHandlerInterface
      */
     protected function create(array $data = []): ApiResponseInterface
     {
-        return new ApiProblem(__('Method not implemented!'), 405);
+        return $this->methodNotImplementedResponse();
     }
 
     /**
@@ -84,7 +83,7 @@ abstract class AbstractResource implements RequestHandlerInterface
      */
     protected function fetch($id): ApiResponseInterface
     {
-        return new ApiProblem(__('Method not implemented!'), 405);
+        return $this->methodNotImplementedResponse();
     }
 
     /**
@@ -93,7 +92,7 @@ abstract class AbstractResource implements RequestHandlerInterface
      */
     protected function fetchAll(array $data = []): ApiResponseInterface
     {
-        return new ApiProblem(__('Method not implemented!'), 405);
+        return $this->methodNotImplementedResponse();
     }
 
     /**
@@ -103,7 +102,7 @@ abstract class AbstractResource implements RequestHandlerInterface
      */
     protected function patch($id, array $data = []): ApiResponseInterface
     {
-        return new ApiProblem(__('Method not implemented!'), 405);
+        return $this->methodNotImplementedResponse();
     }
 
     /**
@@ -113,7 +112,7 @@ abstract class AbstractResource implements RequestHandlerInterface
      */
     protected function update($id, array $data = []): ApiResponseInterface
     {
-        return new ApiProblem(__('Method not implemented!'), 405);
+        return $this->methodNotImplementedResponse();
     }
 
     /**
@@ -121,6 +120,11 @@ abstract class AbstractResource implements RequestHandlerInterface
      * @return ApiResponseInterface
      */
     protected function delete($id): ApiResponseInterface
+    {
+        return $this->methodNotImplementedResponse();
+    }
+
+    private function methodNotImplementedResponse(): ApiProblem
     {
         return new ApiProblem(__('Method not implemented!'), 405);
     }
