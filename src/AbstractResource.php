@@ -37,8 +37,8 @@ abstract class AbstractResource implements RequestHandlerInterface
     {
         $method      = $request->getAttribute(ApiMiddleware::REST_METHOD_ATTR_NAME);
         $attributes  = $this->pathIdentifiers = $request->getAttributes();
-        $data        = $request->getParsedBody();
-        $queryParams = $request->getQueryParams();
+        $data        = $request->getParsedBody() ?? [];
+        $queryParams = $request->getQueryParams() ?? [];
         $this->buildAuthenticateDataFromRequest($request);
 
         if ($method === self::METHOD_FETCH) {
