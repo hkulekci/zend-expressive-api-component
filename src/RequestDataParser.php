@@ -26,10 +26,11 @@ class RequestDataParser implements MiddlewareInterface
         if ($contentType === 'application/json' && empty($data) && !empty($request->getBody()->getContents())) {
             try {
                 $data = Json::decode($request->getBody()->getContents(), Json::TYPE_ARRAY);
-                return $handler->handle($request->withParsedBody($data));
             } catch (\Exception $e) {
                 return new ApiProblem('Data Parsing Error.', 400);
             }
+
+            return $handler->handle($request->withParsedBody($data));
         }
 
         if ($contentType === 'application/x-www-form-urlencoded') {
